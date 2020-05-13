@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"lenslocked.com/views"
+	"github.com/lenslocked/views"
 )
 
 var homeView *views.View
@@ -17,13 +17,13 @@ var contactTemplate *template.Template
 
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	if err := homeTemplate.Execute(w, nil); err != nil {
+	if err := homeView.Template.Execute(w, homeView.Layout, nil); err != nil {
 		panic(err)
 	}
 }
 func contact(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	if err := contactTemplate.Execute(w, nil); err != nil {
+	if err := contactView.Template.Execute(w, homeView.Layout, nil); err != nil {
 		panic(err)
 	}
 }
