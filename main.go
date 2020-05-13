@@ -5,8 +5,8 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/golenslocked/views"
 	"github.com/gorilla/mux"
-	"github.com/lenslocked/views"
 )
 
 var homeView *views.View

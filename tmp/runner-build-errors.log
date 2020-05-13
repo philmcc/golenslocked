@@ -1,0 +1,3 @@
+main.go:8:2: cannot find package "github.com/golenslocked/views" in any of:
+	c:\go\src\github.com\golenslocked\views (from $GOROOT)
+	C:\Users\philm\go\src\github.com\golenslocked\views (from $GOPATH)
