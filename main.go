@@ -2,34 +2,30 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 
+	"github.com/golenslocked/controllers"
 	"github.com/golenslocked/views"
 	"github.com/gorilla/mux"
 )
 
 var homeView *views.View
 var contactView *views.View
-
-var homeTemplate *template.Template
-var contactTemplate *template.Template
+var faqView *views.View
 
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	if err := homeView.Template.Execute(w, homeView.Layout, nil); err != nil {
-		panic(err)
-	}
+	must(homeView.Render(w, nil))
 }
+
 func contact(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	if err := contactView.Template.Execute(w, homeView.Layout, nil); err != nil {
-		panic(err)
-	}
+	must(contactView.Render(w, nil))
 }
+
 func faq(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprint(w, "This is the FAQ page ")
+	must(faqView.Render(w, nil))
 }
 
 func notfound(w http.ResponseWriter, r *http.Request) {
@@ -37,18 +33,27 @@ func notfound(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "My own 404 page")
 }
 
-func main() {
+// A helper function that panics on any error
+func must(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
 
-	homeView = views.NewView("views/home.gohtml")
-	contactView = views.NewView("views/contact.gohtml")
+func main() {
+	homeView = views.NewView("bootstrap",
+		"views/home.gohtml")
+	contactView = views.NewView("bootstrap",
+		"views/contact.gohtml")
+	faqView = views.NewView("bootstrapFAQ",
+		"views/faq.gohtml")
+	usersC := controllers.NewUsers()
 
 	r := mux.NewRouter()
-
-	r.HandleFunc("/", home)
-	r.HandleFunc("/contact", contact)
-	r.HandleFunc("/faq", faq)
-	var h http.Handler = http.HandlerFunc(notfound)
-	r.NotFoundHandler = h
-
+	r.HandleFunc("/", home).Methods("GET")
+	r.HandleFunc("/contact", contact).Methods("GET")
+	r.HandleFunc("/faq", faq).Methods("GET")
+	r.HandleFunc("/signup", usersC.New).Methods("GET")
+	r.HandleFunc("/signup", usersC.Create).Methods("POST")
 	http.ListenAndServe(":3000", r)
 }
